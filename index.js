@@ -1,27 +1,63 @@
-const button=document.querySelectorAll('select');
-const input=document.querySelectorAll('input');
-const url="https://api.exchangeratesapi.io/latest";
-let html='';
+async function Rates(callback) {
+    var ExchangeRatesDetails = await fetch('https://api.exchangeratesapi.io/latest');
+    ExchangeRatesDetails = await ExchangeRatesDetails.json();
+    callback(ExchangeRatesDetails);
+}
 
-async function currency(){
-    const res=await fetch(url);
-    const data=await res.json();
-    
-    const arrkey=Object.keys(data.rates)
-    
-    arrkey.map(item=>{
-        return html+=`<option value=${item}>${item}</option>`;
+const valueCAD = document.getElementById('CAD');
+const valueINR = document.getElementById('INR');
+const valueGBP = document.getElementById('GBP');
+const valueJPY = document.getElementById('JPY');
+const valueUSD = document.getElementById('USD');
+
+valueCAD.oninput = function(){
+    var temp = valueCAD.value;
+    Rates( data =>{
+        valueINR.value = ( temp * data.rates.INR / data.rates.CAD ).toFixed(2);
+        valueGBP.value = (temp * data.rates.GBP / data.rates.CAD).toFixed(2);
+        valueJPY.value = (temp * data.rates.JPY / data.rates.CAD).toFixed(2);
+        valueUSD.value = (temp * data.rates.USD / data.rates.CAD).toFixed(2);
     });
-    for(let i=0;i<button.length;i++){
-        button[i].innerHTML=html;
-    };
-    function convert(i,j){
-          input[i].value=input[j].value*data.rates[button[i].value]/data.rates[button[j].value];
-    }
-    input[0].addEventListener('keyup',()=> convert(1,0))
-     input[1].addEventListener('keyup',()=>convert(0,1))
-      button[0].addEventListener('keyup',()=>convert(1,0))
-          button[1].addEventListener('keyup',()=>convert(0,1))
-    };
 
-currency();
+};
+
+valueINR.oninput = function(){
+    var temp = valueINR.value;
+    Rates( data =>{
+        valueCAD.value = ( temp * data.rates.CAD / data.rates.INR ).toFixed(2);
+        valueGBP.value = (temp * data.rates.GBP / data.rates.INR).toFixed(2);
+        valueJPY.value = (temp * data.rates.JPY / data.rates.INR).toFixed(2);
+        valueUSD.value = (temp * data.rates.USD / data.rates.INR).toFixed(2);
+    });
+
+};
+valueGBP.oninput = function(){
+    var temp = valueGBP.value;
+    Rates( data =>{
+        valueINR.value = ( temp * data.rates.INR / data.rates.GBP ).toFixed(2);
+        valueCAD.value = (temp * data.rates.CAD / data.rates.GBP).toFixed(2);
+        valueJPY.value = (temp * data.rates.JPY / data.rates.GBP).toFixed(2);
+        valueUSD.value = (temp * data.rates.USD / data.rates.GBP).toFixed(2);
+    });
+
+};
+valueJPY.oninput = function(){
+    var temp = valueJPY.value;
+    Rates( data =>{
+        valueINR.value = ( temp * data.rates.INR / data.rates.JPY ).toFixed(2);
+        valueGBP.value = (temp * data.rates.GBP / data.rates.JPY).toFixed(2);
+        valueCAD.value = (temp * data.rates.CAD / data.rates.JPY).toFixed(2);
+        valueUSD.value = (temp * data.rates.USD / data.rates.JPY).toFixed(2);
+    });
+
+};
+valueUSD.oninput = function(){
+    var temp = valueUSD.value;
+    Rates( data =>{
+        valueINR.value = ( temp * data.rates.INR / data.rates.USD ).toFixed(2);
+        valueGBP.value = (temp * data.rates.GBP / data.rates.USD).toFixed(2);
+        valueJPY.value = (temp * data.rates.JPY / data.rates.USD).toFixed(2);
+        valueCAD.value = (temp * data.rates.CAD / data.rates.USD).toFixed(2);
+    });
+
+};
